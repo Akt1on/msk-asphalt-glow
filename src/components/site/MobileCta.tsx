@@ -6,7 +6,7 @@ export function MobileCta() {
   const c = useCms((s) => s.contacts);
   return (
     <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 pointer-events-none">
-      <div className="mx-auto max-w-md p-3 pointer-events-auto">
+      <div className="mx-auto max-w-md px-3 pt-3 pb-safe pointer-events-auto">
         <div className="glass rounded-full shadow-soft p-2 flex items-center gap-2">
           <a
             href={telLink(c.phone)}

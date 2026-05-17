@@ -71,17 +71,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Asphalt Glow is a modern React single-page application for asphalt paving and landscaping services." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Asphalt Glow is a modern React single-page application for asphalt paving and landscaping services." },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#21A038" },
+      { title: "МСК АСФАЛЬТ — асфальтирование под ключ в Москве и МО" },
+      { name: "description", content: "Асфальтирование дорог, дворов, парковок и территорий под ключ. Москва и МО. Своя техника, материалы по ГОСТ, гарантия до 5 лет." },
+      { property: "og:site_name", content: "МСК АСФАЛЬТ" },
+      { property: "og:title", content: "МСК АСФАЛЬТ — асфальтирование под ключ" },
+      { property: "og:description", content: "Дороги, дворы, парковки, СНТ. Гарантия до 5 лет." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Asphalt Glow is a modern React single-page application for asphalt paving and landscaping services." },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "МСК АСФАЛЬТ" },
+      { name: "twitter:description", content: "Асфальтирование под ключ в Москве и МО." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/B3rpy7rLwuO4MY0HvnCjPc6H1rp1/social-images/social-1779007893656-1000012349.webp" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/B3rpy7rLwuO4MY0HvnCjPc6H1rp1/social-images/social-1779007893656-1000012349.webp" },
     ],
@@ -100,7 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <head>
         <HeadContent />
       </head>

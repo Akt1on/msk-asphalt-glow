@@ -3,7 +3,6 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
-  HeadContent,
   useRouter,
 } from "@tanstack/react-router";
 
@@ -93,7 +92,6 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <HeadContent />
       <Outlet />
     </QueryClientProvider>
   );

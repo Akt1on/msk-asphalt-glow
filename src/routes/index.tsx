@@ -1,26 +1,55 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { Hero } from "@/components/site/Hero";
+import { Advantages } from "@/components/site/Advantages";
+import { Services } from "@/components/site/Services";
+import { Portfolio } from "@/components/site/Portfolio";
+import { Prices } from "@/components/site/Prices";
+import { Reviews } from "@/components/site/Reviews";
+import { WhyUs } from "@/components/site/WhyUs";
+import { Geography } from "@/components/site/Geography";
+import { Contacts } from "@/components/site/Contacts";
+import { CookieBanner } from "@/components/site/CookieBanner";
+import { MobileCta } from "@/components/site/MobileCta";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { Toaster } from "sonner";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "МСК АСФАЛЬТ — асфальтирование дорог и дворов в Москве и МО" },
+      {
+        name: "description",
+        content:
+          "Асфальтирование под ключ в Москве и Московской области. Дороги, дворы, парковки, СНТ. Своя техника, материалы по ГОСТ, гарантия до 5 лет.",
+      },
+      { property: "og:title", content: "МСК АСФАЛЬТ — асфальтирование под ключ" },
+      { property: "og:description", content: "Дороги, дворы, парковки. Гарантия до 5 лет." },
+      { property: "og:type", content: "website" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <main>
+        <Hero />
+        <Advantages />
+        <Services />
+        <Portfolio />
+        <Prices />
+        <Reviews />
+        <WhyUs />
+        <Geography />
+        <Contacts />
+      </main>
+      <SiteFooter />
+      <MobileCta />
+      <CookieBanner />
+      <Toaster position="top-center" richColors />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }

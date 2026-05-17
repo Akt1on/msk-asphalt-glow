@@ -8,20 +8,21 @@ export function Hero() {
   const contacts = useCms((s) => s.contacts);
 
   return (
-    <section className="relative min-h-[100svh] pt-28 pb-16 overflow-hidden bg-gradient-hero">
-      {/* decorative orbs */}
-      <div className="pointer-events-none absolute -top-32 -right-32 size-[420px] rounded-full bg-[color:var(--brand-mint)] opacity-50 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -left-32 size-[480px] rounded-full bg-[color:var(--brand-sky)] opacity-30 blur-3xl" />
-      <div className="pointer-events-none absolute top-1/3 left-1/2 size-[300px] rounded-full bg-[color:var(--brand-green)] opacity-20 blur-3xl" />
+    <section className="relative min-h-[100svh] pt-28 pb-20 overflow-hidden bg-gradient-hero">
+      {/* atmospheric lighting */}
+      <div className="pointer-events-none absolute -top-40 -right-40 size-[520px] rounded-full bg-[color:var(--brand-mint)] opacity-60 blur-[120px] animate-float" />
+      <div className="pointer-events-none absolute -bottom-48 -left-40 size-[560px] rounded-full bg-[color:var(--brand-sky)] opacity-35 blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/3 left-1/2 size-[360px] -translate-x-1/2 rounded-full bg-[color:var(--brand-green)] opacity-25 blur-[100px]" />
+      <div className="pointer-events-none absolute inset-0 bg-noise opacity-[0.35] mix-blend-overlay" />
 
       <div className="container-x relative">
-        <div className="grid lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-7 space-y-7">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div className="lg:col-span-7 space-y-6 sm:space-y-7">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm font-medium text-foreground/80"
+              className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-xs sm:text-sm font-medium text-foreground/80"
             >
               <span className="size-2 rounded-full bg-primary animate-pulse-glow" />
               {hero.badge}
@@ -31,11 +32,18 @@ export function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05 }}
-              className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.02] tracking-tight text-foreground"
+              className="font-display text-[2.5rem] leading-[1.05] sm:text-6xl lg:text-7xl font-extrabold tracking-[-0.02em] text-foreground"
             >
               {hero.titleA}
               <br />
-              <span className="text-gradient-brand drop-shadow-[0_8px_30px_color-mix(in_oklab,#21A038_40%,transparent)]">
+              <span
+                className="text-transparent bg-clip-text animate-shine"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(110deg, #21A038 0%, #7CEB8A 25%, #0098F8 50%, #7CEB8A 75%, #21A038 100%)",
+                  filter: "drop-shadow(0 10px 30px color-mix(in oklab, #21A038 35%, transparent))",
+                }}
+              >
                 {hero.titleAccent}
               </span>
             </motion.h1>

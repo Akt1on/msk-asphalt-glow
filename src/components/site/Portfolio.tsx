@@ -23,14 +23,20 @@ export function Portfolio() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.5, delay: (i % 3) * 0.08 }}
-              className="group relative aspect-[4/5] rounded-3xl overflow-hidden shadow-card"
+              className="group relative aspect-[4/5] rounded-3xl overflow-hidden shadow-card bg-gradient-to-br from-secondary to-muted"
             >
-              <img
-                src={p.image}
-                alt={p.title}
-                loading="lazy"
-                className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
+              {p.image ? (
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 size-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.08]"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-brand-soft opacity-40" />
+              )}
+              <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-3xl pointer-events-none" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6 text-white">
                 <h3 className="text-xl font-bold">{p.title}</h3>

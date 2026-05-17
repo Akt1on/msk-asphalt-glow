@@ -35,7 +35,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main>
+      <main className="pb-24 lg:pb-0">
         <Hero />
         <Advantages />
         <Services />

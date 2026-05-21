@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAdminAuth, useCms } from "@/store/cms";
 import { ImageDropzone } from "@/components/admin/ImageDropzone";
 import { Toaster, toast } from "sonner";
-import { LogOut, Plus, Trash2, Save, Lock, Home, RotateCcw } from "lucide-react";
+import { LogOut, Plus, Trash2, Save, Lock, Home, RotateCcw, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -29,6 +29,7 @@ function LoginScreen() {
   const login = useAdminAuth((s) => s.login);
   const [u, setU] = useState("");
   const [p, setP] = useState("");
+  const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
   const onSubmit = (e: React.FormEvent) => {
@@ -45,13 +46,13 @@ function LoginScreen() {
     <div className="min-h-screen grid place-items-center p-4 bg-gradient-hero">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-md glass rounded-3xl shadow-soft p-8 space-y-5"
+        className="w-full max-w-md rounded-3xl shadow-soft p-8 space-y-5 bg-card border border-border"
       >
         <div className="size-14 rounded-2xl bg-gradient-brand grid place-items-center text-white shadow-glow-green mx-auto">
           <Lock className="size-6" />
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Вход в админ-панель</h1>
+          <h1 className="text-2xl font-bold text-foreground">Вход в админ-панель</h1>
           <p className="text-sm text-muted-foreground mt-1">МСК АСФАЛЬТ — управление контентом</p>
         </div>
         <div className="space-y-3">
@@ -59,17 +60,27 @@ function LoginScreen() {
             value={u}
             onChange={(e) => setU(e.target.value)}
             placeholder="Логин"
-            className="w-full rounded-2xl border border-border bg-white px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full rounded-2xl border border-border bg-background px-4 py-3 font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             autoComplete="username"
           />
-          <input
-            type="password"
-            value={p}
-            onChange={(e) => setP(e.target.value)}
-            placeholder="Пароль"
-            className="w-full rounded-2xl border border-border bg-white px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-primary"
-            autoComplete="current-password"
-          />
+          <div className="relative">
+            <input
+              type={show ? "text" : "password"}
+              value={p}
+              onChange={(e) => setP(e.target.value)}
+              placeholder="Пароль"
+              className="w-full rounded-2xl border border-border bg-background pl-4 pr-12 py-3 font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              onClick={() => setShow((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Показать пароль"
+            >
+              {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            </button>
+          </div>
         </div>
         <button
           type="submit"
@@ -85,17 +96,21 @@ function LoginScreen() {
   );
 }
 
-type Tab = "hero" | "services" | "portfolio" | "reviews" | "prices" | "contacts";
+type Tab = "brand" | "hero" | "services" | "portfolio" | "advantages" | "steps" | "districts" | "reviews" | "prices" | "contacts";
 
 function AdminDashboard() {
-  const [tab, setTab] = useState<Tab>("hero");
+  const [tab, setTab] = useState<Tab>("brand");
   const logout = useAdminAuth((s) => s.logout);
   const reset = useCms((s) => s.reset);
 
   const tabs: { id: Tab; label: string }[] = [
+    { id: "brand", label: "Бренд" },
     { id: "hero", label: "Hero" },
     { id: "services", label: "Услуги" },
     { id: "portfolio", label: "Портфолио" },
+    { id: "advantages", label: "Преимущества" },
+    { id: "steps", label: "Шаги работы" },
+    { id: "districts", label: "География" },
     { id: "reviews", label: "Отзывы" },
     { id: "prices", label: "Цены" },
     { id: "contacts", label: "Контакты" },
@@ -103,13 +118,13 @@ function AdminDashboard() {
 
   return (
     <div>
-      <header className="bg-white border-b border-border sticky top-0 z-30">
+      <header className="bg-card border-b border-border sticky top-0 z-30">
         <div className="container-x py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="size-9 rounded-full bg-gradient-brand grid place-items-center text-white font-bold text-sm">
               М
             </div>
-            <div className="font-bold">Админ-панель</div>
+            <div className="font-bold text-foreground">Админ-панель</div>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -119,13 +134,13 @@ function AdminDashboard() {
                   toast.success("Данные сброшены");
                 }
               }}
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-medium hover:bg-secondary"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-medium hover:bg-secondary text-foreground"
             >
               <RotateCcw className="size-4" /> Сброс
             </button>
             <Link
               to="/"
-              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-medium hover:bg-secondary"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-medium hover:bg-secondary text-foreground"
             >
               <Home className="size-4" /> Сайт
             </Link>
@@ -157,9 +172,13 @@ function AdminDashboard() {
       </header>
 
       <main className="container-x py-8">
+        {tab === "brand" && <BrandEditor />}
         {tab === "hero" && <HeroEditor />}
         {tab === "services" && <ServicesEditor />}
         {tab === "portfolio" && <PortfolioEditor />}
+        {tab === "advantages" && <AdvantagesEditor />}
+        {tab === "steps" && <StepsEditor />}
+        {tab === "districts" && <DistrictsEditor />}
         {tab === "reviews" && <ReviewsEditor />}
         {tab === "prices" && <PricesEditor />}
         {tab === "contacts" && <ContactsEditor />}
@@ -187,13 +206,13 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={4}
-          className="mt-1 w-full rounded-2xl border border-border bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="mt-1 w-full rounded-2xl border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
         />
       ) : (
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="mt-1 w-full rounded-2xl border border-border bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="mt-1 w-full rounded-2xl border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
         />
       )}
     </label>
@@ -202,15 +221,32 @@ function Field({
 
 function Card({ children, title, actions }: { children: React.ReactNode; title?: string; actions?: React.ReactNode }) {
   return (
-    <div className="rounded-3xl bg-white border border-border shadow-card p-6">
+    <div className="rounded-3xl bg-card border border-border shadow-card p-6">
       {(title || actions) && (
-        <div className="flex items-center justify-between mb-4">
-          {title && <h3 className="font-bold text-lg">{title}</h3>}
+        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+          {title && <h3 className="font-bold text-lg text-foreground">{title}</h3>}
           {actions}
         </div>
       )}
       {children}
     </div>
+  );
+}
+
+function BrandEditor() {
+  const brand = useCms((s) => s.brand);
+  const setBrand = useCms((s) => s.setBrand);
+  return (
+    <Card title="Брендинг">
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Field label="Название" value={brand.name} onChange={(v) => setBrand({ name: v })} />
+        <Field label="Слоган" value={brand.tagline} onChange={(v) => setBrand({ tagline: v })} />
+        <Field label="Буква логотипа" value={brand.logoChar} onChange={(v) => setBrand({ logoChar: v.slice(0, 2) })} />
+        <div className="sm:col-span-2">
+          <Field label="Текст в подвале" value={brand.footerNote} onChange={(v) => setBrand({ footerNote: v })} textarea />
+        </div>
+      </div>
+    </Card>
   );
 }
 
@@ -262,7 +298,7 @@ function ServicesEditor() {
   const upsert = useCms((s) => s.upsertService);
   const remove = useCms((s) => s.removeService);
   const add = () =>
-    upsert({ id: `s-${Date.now()}`, title: "Новая услуга", description: "Описание", icon: "Sparkles", priceFrom: "" });
+    upsert({ id: `s-${Date.now()}`, title: "Новая услуга", description: "Описание", icon: "Sparkles", priceFrom: "", image: "" });
   return (
     <div className="space-y-4">
       <Card
@@ -276,9 +312,10 @@ function ServicesEditor() {
           </button>
         }
       >
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
           {services.map((s) => (
             <div key={s.id} className="rounded-2xl border border-border p-4 space-y-3">
+              <ImageDropzone value={s.image} onChange={(v) => upsert({ ...s, image: v })} />
               <Field label="Название" value={s.title} onChange={(v) => upsert({ ...s, title: v })} />
               <Field label="Описание" value={s.description} onChange={(v) => upsert({ ...s, description: v })} textarea />
               <div className="grid grid-cols-2 gap-2">
@@ -331,6 +368,102 @@ function PortfolioEditor() {
               className="inline-flex items-center gap-1.5 text-sm text-destructive font-medium"
             >
               <Trash2 className="size-4" /> Удалить
+            </button>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function AdvantagesEditor() {
+  const items = useCms((s) => s.advantages);
+  const upsert = useCms((s) => s.upsertAdvantage);
+  const remove = useCms((s) => s.removeAdvantage);
+  const add = () => upsert({ id: `a-${Date.now()}`, icon: "Sparkles", title: "Преимущество", text: "Описание" });
+  return (
+    <Card
+      title={`Преимущества (${items.length})`}
+      actions={
+        <button onClick={add} className="inline-flex items-center gap-1.5 rounded-full bg-gradient-brand text-white px-4 py-2 text-sm font-semibold">
+          <Plus className="size-4" /> Добавить
+        </button>
+      }
+    >
+      <div className="grid sm:grid-cols-2 gap-4">
+        {items.map((a) => (
+          <div key={a.id} className="rounded-2xl border border-border p-4 space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <Field label="Иконка (lucide)" value={a.icon} onChange={(v) => upsert({ ...a, icon: v })} />
+              <Field label="Заголовок" value={a.title} onChange={(v) => upsert({ ...a, title: v })} />
+            </div>
+            <Field label="Текст" value={a.text} onChange={(v) => upsert({ ...a, text: v })} textarea />
+            <button onClick={() => remove(a.id)} className="inline-flex items-center gap-1.5 text-sm text-destructive font-medium">
+              <Trash2 className="size-4" /> Удалить
+            </button>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function StepsEditor() {
+  const items = useCms((s) => s.steps);
+  const upsert = useCms((s) => s.upsertStep);
+  const remove = useCms((s) => s.removeStep);
+  const add = () => upsert({ id: `st-${Date.now()}`, icon: "Sparkles", title: "Шаг", text: "Описание" });
+  return (
+    <Card
+      title={`Шаги работы (${items.length})`}
+      actions={
+        <button onClick={add} className="inline-flex items-center gap-1.5 rounded-full bg-gradient-brand text-white px-4 py-2 text-sm font-semibold">
+          <Plus className="size-4" /> Добавить
+        </button>
+      }
+    >
+      <div className="grid sm:grid-cols-2 gap-4">
+        {items.map((s) => (
+          <div key={s.id} className="rounded-2xl border border-border p-4 space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <Field label="Иконка (lucide)" value={s.icon} onChange={(v) => upsert({ ...s, icon: v })} />
+              <Field label="Заголовок" value={s.title} onChange={(v) => upsert({ ...s, title: v })} />
+            </div>
+            <Field label="Текст" value={s.text} onChange={(v) => upsert({ ...s, text: v })} textarea />
+            <button onClick={() => remove(s.id)} className="inline-flex items-center gap-1.5 text-sm text-destructive font-medium">
+              <Trash2 className="size-4" /> Удалить
+            </button>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function DistrictsEditor() {
+  const items = useCms((s) => s.districts);
+  const upsert = useCms((s) => s.upsertDistrict);
+  const remove = useCms((s) => s.removeDistrict);
+  const add = () => upsert({ id: `d-${Date.now()}`, name: "Новый район" });
+  return (
+    <Card
+      title={`География (${items.length})`}
+      actions={
+        <button onClick={add} className="inline-flex items-center gap-1.5 rounded-full bg-gradient-brand text-white px-4 py-2 text-sm font-semibold">
+          <Plus className="size-4" /> Добавить
+        </button>
+      }
+    >
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {items.map((d) => (
+          <div key={d.id} className="rounded-2xl border border-border p-3 flex items-center gap-2">
+            <input
+              value={d.name}
+              onChange={(e) => upsert({ ...d, name: e.target.value })}
+              className="flex-1 min-w-0 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <button onClick={() => remove(d.id)} className="size-9 shrink-0 rounded-xl bg-destructive/10 text-destructive grid place-items-center">
+              <Trash2 className="size-4" />
             </button>
           </div>
         ))}

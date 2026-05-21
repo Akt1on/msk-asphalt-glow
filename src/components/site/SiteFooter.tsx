@@ -4,6 +4,7 @@ import { maxLink, telLink } from "@/lib/contacts";
 
 export function SiteFooter() {
   const c = useCms((s) => s.contacts);
+  const brand = useCms((s) => s.brand);
   return (
     <footer className="bg-foreground text-background py-12 pb-28 lg:pb-12">
       <div className="container-x">
@@ -11,17 +12,14 @@ export function SiteFooter() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-gradient-brand grid place-items-center text-white font-bold">
-                М
+                {brand.logoChar}
               </div>
               <div>
-                <div className="font-bold">МСК АСФАЛЬТ</div>
-                <div className="text-xs opacity-70">благоустройство под ключ</div>
+                <div className="font-bold">{brand.name}</div>
+                <div className="text-xs opacity-70">{brand.tagline}</div>
               </div>
             </div>
-            <p className="mt-4 text-sm opacity-70 max-w-md">
-              Асфальтирование, благоустройство, ремонт покрытий в Москве и Московской области. Собственная техника,
-              гарантия до 5 лет.
-            </p>
+            <p className="mt-4 text-sm opacity-70 max-w-md">{brand.footerNote}</p>
           </div>
           <div>
             <div className="text-xs uppercase tracking-wider opacity-60">Контакты</div>
@@ -47,7 +45,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="mt-10 pt-6 border-t border-white/10 text-xs opacity-60">
-          © {new Date().getFullYear()} МСК АСФАЛЬТ. Все права защищены.
+          © {new Date().getFullYear()} {brand.name}. Все права защищены.
         </div>
       </div>
     </footer>

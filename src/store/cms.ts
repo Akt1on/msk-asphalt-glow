@@ -6,8 +6,9 @@ export interface Service {
   id: string;
   title: string;
   description: string;
-  icon: string; // lucide icon name
+  icon: string;
   priceFrom?: string;
+  image?: string;
 }
 
 export interface PortfolioItem {
@@ -15,7 +16,7 @@ export interface PortfolioItem {
   title: string;
   location: string;
   area: string;
-  image: string; // base64 or url
+  image: string;
 }
 
 export interface Review {
@@ -32,6 +33,25 @@ export interface PriceRow {
   name: string;
   unit: string;
   price: string;
+}
+
+export interface Advantage {
+  id: string;
+  icon: string;
+  title: string;
+  text: string;
+}
+
+export interface Step {
+  id: string;
+  icon: string;
+  title: string;
+  text: string;
+}
+
+export interface District {
+  id: string;
+  name: string;
 }
 
 export interface HeroContent {
@@ -58,14 +78,26 @@ export interface ContactsContent {
   company: string;
 }
 
+export interface BrandContent {
+  name: string;
+  tagline: string;
+  logoChar: string;
+  footerNote: string;
+}
+
 interface CmsState {
+  brand: BrandContent;
   hero: HeroContent;
   services: Service[];
   portfolio: PortfolioItem[];
   reviews: Review[];
   prices: PriceRow[];
+  advantages: Advantage[];
+  steps: Step[];
+  districts: District[];
   contacts: ContactsContent;
 
+  setBrand: (b: Partial<BrandContent>) => void;
   setHero: (h: Partial<HeroContent>) => void;
   setContacts: (c: Partial<ContactsContent>) => void;
 
@@ -80,6 +112,15 @@ interface CmsState {
 
   upsertPrice: (p: PriceRow) => void;
   removePrice: (id: string) => void;
+
+  upsertAdvantage: (a: Advantage) => void;
+  removeAdvantage: (id: string) => void;
+
+  upsertStep: (s: Step) => void;
+  removeStep: (id: string) => void;
+
+  upsertDistrict: (d: District) => void;
+  removeDistrict: (id: string) => void;
 
   reset: () => void;
 }
@@ -124,6 +165,31 @@ const defaultPrices: PriceRow[] = [
   { id: "pr8", name: "Выезд инженера и смета", unit: "—", price: "бесплатно" },
 ];
 
+const defaultAdvantages: Advantage[] = [
+  { id: "a1", icon: "Award", title: "12+ лет опыта", text: "Тысячи квадратных метров покрытий в Москве и МО." },
+  { id: "a2", icon: "Clock", title: "Старт от 24 часов", text: "Выезжаем на замер в день обращения, начинаем работы сразу." },
+  { id: "a3", icon: "Wallet", title: "Честная смета", text: "Фиксированная цена в договоре, без скрытых доплат." },
+  { id: "a4", icon: "Truck", title: "Собственная техника", text: "Катки, асфальтоукладчики, фрезы, самосвалы — всё своё." },
+  { id: "a5", icon: "ShieldCheck", title: "Гарантия до 5 лет", text: "Письменная гарантия на работы и материалы по ГОСТ." },
+  { id: "a6", icon: "Users", title: "Свои бригады", text: "Опытные мастера в штате, без субподряда." },
+];
+
+const defaultSteps: Step[] = [
+  { id: "st1", icon: "FileSignature", title: "Заявка и смета", text: "Выезд инженера, замеры, точная смета за 30 минут." },
+  { id: "st2", icon: "ClipboardCheck", title: "Договор", text: "Фиксированная цена и сроки в письменном договоре." },
+  { id: "st3", icon: "Truck", title: "Подготовка", text: "Снятие старого покрытия, основание, дренаж, бордюры." },
+  { id: "st4", icon: "Hammer", title: "Укладка асфальта", text: "Асфальтоукладчик, катки, температурный контроль." },
+  { id: "st5", icon: "HardHat", title: "Сдача объекта", text: "Уборка, разметка, акт приёма-передачи работ." },
+  { id: "st6", icon: "ShieldCheck", title: "Гарантия", text: "До 5 лет на покрытие, оперативное реагирование по гарантии." },
+];
+
+const defaultDistricts: District[] = [
+  "Москва (все округа)", "Балашиха", "Химки", "Мытищи", "Королёв",
+  "Подольск", "Люберцы", "Красногорск", "Одинцово", "Домодедово",
+  "Истра", "Видное", "Реутов", "Долгопрудный", "Щёлково",
+  "Пушкино", "Сергиев Посад", "Серпухов", "Ногинск", "Чехов",
+].map((name, i) => ({ id: `d${i + 1}`, name }));
+
 const defaultHero: HeroContent = {
   badge: "Москва и Московская область",
   titleA: "Асфальтирование дорог и дворов",
@@ -148,70 +214,75 @@ const defaultContacts: ContactsContent = {
   company: "МСК АСФАЛЬТ",
 };
 
+const defaultBrand: BrandContent = {
+  name: "МСК АСФАЛЬТ",
+  tagline: "благоустройство под ключ",
+  logoChar: "М",
+  footerNote: "Асфальтирование, благоустройство, ремонт покрытий в Москве и Московской области. Собственная техника, гарантия до 5 лет.",
+};
+
+function upsertBy<T extends { id: string }>(arr: T[], item: T): T[] {
+  const idx = arr.findIndex((x) => x.id === item.id);
+  if (idx === -1) return [...arr, item];
+  const next = [...arr];
+  next[idx] = item;
+  return next;
+}
+
 export const useCms = create<CmsState>()(
   persist(
     (set) => ({
+      brand: defaultBrand,
       hero: defaultHero,
       services: defaultServices,
       portfolio: defaultPortfolio,
       reviews: defaultReviews,
       prices: defaultPrices,
+      advantages: defaultAdvantages,
+      steps: defaultSteps,
+      districts: defaultDistricts,
       contacts: defaultContacts,
 
+      setBrand: (b) => set((s) => ({ brand: { ...s.brand, ...b } })),
       setHero: (h) => set((s) => ({ hero: { ...s.hero, ...h } })),
       setContacts: (c) => set((s) => ({ contacts: { ...s.contacts, ...c } })),
 
-      upsertService: (item) =>
-        set((s) => {
-          const idx = s.services.findIndex((x) => x.id === item.id);
-          if (idx === -1) return { services: [...s.services, item] };
-          const next = [...s.services];
-          next[idx] = item;
-          return { services: next };
-        }),
+      upsertService: (i) => set((s) => ({ services: upsertBy(s.services, i) })),
       removeService: (id) => set((s) => ({ services: s.services.filter((x) => x.id !== id) })),
 
-      upsertPortfolio: (item) =>
-        set((s) => {
-          const idx = s.portfolio.findIndex((x) => x.id === item.id);
-          if (idx === -1) return { portfolio: [...s.portfolio, item] };
-          const next = [...s.portfolio];
-          next[idx] = item;
-          return { portfolio: next };
-        }),
+      upsertPortfolio: (i) => set((s) => ({ portfolio: upsertBy(s.portfolio, i) })),
       removePortfolio: (id) => set((s) => ({ portfolio: s.portfolio.filter((x) => x.id !== id) })),
 
-      upsertReview: (item) =>
-        set((s) => {
-          const idx = s.reviews.findIndex((x) => x.id === item.id);
-          if (idx === -1) return { reviews: [...s.reviews, item] };
-          const next = [...s.reviews];
-          next[idx] = item;
-          return { reviews: next };
-        }),
+      upsertReview: (i) => set((s) => ({ reviews: upsertBy(s.reviews, i) })),
       removeReview: (id) => set((s) => ({ reviews: s.reviews.filter((x) => x.id !== id) })),
 
-      upsertPrice: (item) =>
-        set((s) => {
-          const idx = s.prices.findIndex((x) => x.id === item.id);
-          if (idx === -1) return { prices: [...s.prices, item] };
-          const next = [...s.prices];
-          next[idx] = item;
-          return { prices: next };
-        }),
+      upsertPrice: (i) => set((s) => ({ prices: upsertBy(s.prices, i) })),
       removePrice: (id) => set((s) => ({ prices: s.prices.filter((x) => x.id !== id) })),
+
+      upsertAdvantage: (i) => set((s) => ({ advantages: upsertBy(s.advantages, i) })),
+      removeAdvantage: (id) => set((s) => ({ advantages: s.advantages.filter((x) => x.id !== id) })),
+
+      upsertStep: (i) => set((s) => ({ steps: upsertBy(s.steps, i) })),
+      removeStep: (id) => set((s) => ({ steps: s.steps.filter((x) => x.id !== id) })),
+
+      upsertDistrict: (i) => set((s) => ({ districts: upsertBy(s.districts, i) })),
+      removeDistrict: (id) => set((s) => ({ districts: s.districts.filter((x) => x.id !== id) })),
 
       reset: () =>
         set({
+          brand: defaultBrand,
           hero: defaultHero,
           services: defaultServices,
           portfolio: defaultPortfolio,
           reviews: defaultReviews,
           prices: defaultPrices,
+          advantages: defaultAdvantages,
+          steps: defaultSteps,
+          districts: defaultDistricts,
           contacts: defaultContacts,
         }),
     }),
-    { name: "msk-asfalt-cms-v1" },
+    { name: "msk-asfalt-cms-v2" },
   ),
 );
 
@@ -222,14 +293,14 @@ interface AuthState {
 }
 
 const ADMIN_USER = "admin";
-const ADMIN_PASS = "emin.admin7";
+const ADMIN_PASS = "admin.emin07";
 
 export const useAdminAuth = create<AuthState>()(
   persist(
     (set) => ({
       isAuthed: false,
       login: (u, p) => {
-        const ok = u === ADMIN_USER && p === ADMIN_PASS;
+        const ok = u.trim() === ADMIN_USER && p === ADMIN_PASS;
         if (ok) set({ isAuthed: true });
         return ok;
       },

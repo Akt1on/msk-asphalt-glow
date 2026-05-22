@@ -5,6 +5,8 @@ import {
   createRootRouteWithContext,
   useRouter,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { bootstrapAuth, bootstrapCms } from "@/store/cms";
 
 function NotFoundComponent() {
   return (
@@ -89,6 +91,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    bootstrapAuth();
+    void bootstrapCms();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

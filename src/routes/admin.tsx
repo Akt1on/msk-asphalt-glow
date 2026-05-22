@@ -1,6 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAdminAuth, useCms } from "@/store/cms";
+import { supabase } from "@/integrations/supabase/client";
 import { ImageDropzone } from "@/components/admin/ImageDropzone";
 import { Toaster, toast } from "sonner";
 import { LogOut, Plus, Trash2, Save, Lock, Home, RotateCcw, Eye, EyeOff } from "lucide-react";
@@ -17,28 +18,59 @@ export const Route = createFileRoute("/admin")({
 
 function AdminPage() {
   const isAuthed = useAdminAuth((s) => s.isAuthed);
+  const ready = useAdminAuth((s) => s.ready);
   return (
     <div className="min-h-screen bg-secondary/40">
       <Toaster position="top-center" richColors />
-      {isAuthed ? <AdminDashboard /> : <LoginScreen />}
+      {!ready ? (
+        <div className="min-h-screen grid place-items-center text-muted-foreground">Загрузка…</div>
+      ) : isAuthed ? (
+        <AdminDashboard />
+      ) : (
+        <LoginScreen />
+      )}
     </div>
   );
 }
 
 function LoginScreen() {
-  const login = useAdminAuth((s) => s.login);
-  const [u, setU] = useState("");
-  const [p, setP] = useState("");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
-  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(u, p)) {
-      toast.success("Добро пожаловать");
-      navigate({ to: "/admin" });
-    } else {
-      toast.error("Неверный логин или пароль");
+    if (busy) return;
+    setBusy(true);
+    try {
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: { emailRedirectTo: `${window.location.origin}/admin` },
+        });
+        if (error) throw error;
+        toast.success("Аккаунт создан. Входим…");
+        // Auto-confirm is on, so sign in straight away.
+        const { error: e2 } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+        if (e2) throw e2;
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+        if (error) throw error;
+        toast.success("Добро пожаловать");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Ошибка входа");
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -52,25 +84,35 @@ function LoginScreen() {
           <Lock className="size-6" />
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">Вход в админ-панель</h1>
-          <p className="text-sm text-muted-foreground mt-1">МСК АСФАЛЬТ — управление контентом</p>
+          <h1 className="text-2xl font-bold text-foreground">
+            {mode === "signup" ? "Регистрация админа" : "Вход в админ-панель"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {mode === "signup"
+              ? "Первый зарегистрированный пользователь становится администратором"
+              : "МСК АСФАЛЬТ — управление контентом"}
+          </p>
         </div>
         <div className="space-y-3">
           <input
-            value={u}
-            onChange={(e) => setU(e.target.value)}
-            placeholder="Логин"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
             className="w-full rounded-2xl border border-border bg-background px-4 py-3 font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            autoComplete="username"
+            autoComplete="email"
           />
           <div className="relative">
             <input
               type={show ? "text" : "password"}
-              value={p}
-              onChange={(e) => setP(e.target.value)}
-              placeholder="Пароль"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Пароль (мин. 6 символов)"
               className="w-full rounded-2xl border border-border bg-background pl-4 pr-12 py-3 font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              autoComplete="current-password"
+              autoComplete={mode === "signup" ? "new-password" : "current-password"}
             />
             <button
               type="button"
@@ -84,9 +126,17 @@ function LoginScreen() {
         </div>
         <button
           type="submit"
-          className="w-full rounded-full bg-gradient-brand text-white py-3 font-semibold shadow-soft hover:shadow-glow-green transition"
+          disabled={busy}
+          className="w-full rounded-full bg-gradient-brand text-white py-3 font-semibold shadow-soft hover:shadow-glow-green transition disabled:opacity-60"
         >
-          Войти
+          {busy ? "…" : mode === "signup" ? "Создать аккаунт" : "Войти"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+          className="block w-full text-center text-sm text-muted-foreground hover:text-foreground"
+        >
+          {mode === "signin" ? "Первый раз? Создать аккаунт" : "Уже есть аккаунт — войти"}
         </button>
         <Link to="/" className="block text-center text-sm text-muted-foreground hover:text-foreground">
           ← на сайт
@@ -100,7 +150,9 @@ type Tab = "brand" | "hero" | "services" | "portfolio" | "advantages" | "steps" 
 
 function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("brand");
-  const logout = useAdminAuth((s) => s.logout);
+  const logout = async () => {
+    await supabase.auth.signOut();
+  };
   const reset = useCms((s) => s.reset);
 
   const tabs: { id: Tab; label: string }[] = [

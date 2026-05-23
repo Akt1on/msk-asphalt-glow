@@ -125,12 +125,12 @@ const defaultServices: Service[] = [
   { id: "s10", title: "Комплексное благоустройство", description: "Под ключ: проект, основание, асфальт, бордюры, разметка, газон.", icon: "Sparkles", priceFrom: "по проекту" },
 ];
 const defaultPortfolio: PortfolioItem[] = [
-  { id: "p1", title: "ЖК «Зелёная долина»", location: "Москва, ЮЗАО", area: "8 400 м²", image: "https://images.unsplash.com/photo-1601758064955-83ed5cab2d61?w=1200&q=80&auto=format&fit=crop" },
-  { id: "p2", title: "Логистический парк", location: "МО, Домодедово", area: "24 000 м²", image: "https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=1200&q=80&auto=format&fit=crop" },
-  { id: "p3", title: "СНТ «Берёзка»", location: "МО, Истра", area: "3 200 м²", image: "https://images.unsplash.com/photo-1597247241055-7c01f487d18f?w=1200&q=80&auto=format&fit=crop" },
-  { id: "p4", title: "Парковка ТЦ", location: "Москва, СВАО", area: "6 100 м²", image: "https://images.unsplash.com/photo-1545179605-1296651e9d43?w=1200&q=80&auto=format&fit=crop" },
-  { id: "p5", title: "Подъезд к складу", location: "МО, Подольск", area: "1 800 м²", image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1200&q=80&auto=format&fit=crop" },
-  { id: "p6", title: "Двор ЖК «Парус»", location: "Москва, САО", area: "4 500 м²", image: "https://images.unsplash.com/photo-1564415900645-d4ca6c0c0b15?w=1200&q=80&auto=format&fit=crop" },
+  { id: "p1", title: "Дороги ЖК «Зелёная долина»", location: "Москва, ЮЗАО", area: "8 400 м²", image: "https://images.unsplash.com/photo-1545158539-1709e8db3424?w=1200&q=80&auto=format&fit=crop" },
+  { id: "p2", title: "Логистический парк, асфальт под фуры", location: "МО, Домодедово", area: "24 000 м²", image: "https://images.unsplash.com/photo-1597762470488-3877b1f538c6?w=1200&q=80&auto=format&fit=crop" },
+  { id: "p3", title: "Подъездные дороги СНТ «Берёзка»", location: "МО, Истра", area: "3 200 м²", image: "https://images.unsplash.com/photo-1517089596392-fb9a9033e05b?w=1200&q=80&auto=format&fit=crop" },
+  { id: "p4", title: "Парковка ТЦ с разметкой", location: "Москва, СВАО", area: "6 100 м²", image: "https://images.unsplash.com/photo-1568532149-2a4b0d6b27b6?w=1200&q=80&auto=format&fit=crop" },
+  { id: "p5", title: "Двор ЖК и тротуарная плитка", location: "Москва, САО", area: "4 500 м²", image: "https://images.unsplash.com/photo-1528938102132-4a9276b8e320?w=1200&q=80&auto=format&fit=crop" },
+  { id: "p6", title: "Ямочный ремонт магистрали", location: "МО, Подольск", area: "1 800 м²", image: "https://images.unsplash.com/photo-1592859600972-1b0834d83747?w=1200&q=80&auto=format&fit=crop" },
 ];
 const defaultReviews: Review[] = [
   { id: "r1", name: "Игорь Воронцов", role: "Главный инженер УК «Северная»", text: "Сделали 6 000 м² дворов ЖК за 9 дней. Чисто, по технологии, документы — комар носа не подточит.", rating: 5 },

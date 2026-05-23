@@ -33,9 +33,13 @@ function AdminPage() {
   );
 }
 
+// Fixed admin credentials → mapped to a hidden Supabase auth user
+const ADMIN_LOGIN = "admin";
+const ADMIN_PASSWORD = "emin.admin07";
+const ADMIN_EMAIL = "admin@msk-asfalt.local";
+
 function LoginScreen() {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -43,30 +47,32 @@ function LoginScreen() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
+    const l = login.trim().toLowerCase();
+    if (l !== ADMIN_LOGIN || password !== ADMIN_PASSWORD) {
+      toast.error("Неверный логин или пароль");
+      return;
+    }
     setBusy(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
+      // Try sign-in; if user doesn't exist yet — create it, then sign in.
+      let { error } = await supabase.auth.signInWithPassword({
+        email: ADMIN_EMAIL,
+        password: ADMIN_PASSWORD,
+      });
+      if (error) {
+        const { error: signUpErr } = await supabase.auth.signUp({
+          email: ADMIN_EMAIL,
+          password: ADMIN_PASSWORD,
           options: { emailRedirectTo: `${window.location.origin}/admin` },
         });
+        if (signUpErr && !/registered/i.test(signUpErr.message)) throw signUpErr;
+        ({ error } = await supabase.auth.signInWithPassword({
+          email: ADMIN_EMAIL,
+          password: ADMIN_PASSWORD,
+        }));
         if (error) throw error;
-        toast.success("Аккаунт создан. Входим…");
-        // Auto-confirm is on, so sign in straight away.
-        const { error: e2 } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-        if (e2) throw e2;
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-        if (error) throw error;
-        toast.success("Добро пожаловать");
       }
+      toast.success("Добро пожаловать");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Ошибка входа");
     } finally {
@@ -84,35 +90,28 @@ function LoginScreen() {
           <Lock className="size-6" />
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground">
-            {mode === "signup" ? "Регистрация админа" : "Вход в админ-панель"}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {mode === "signup"
-              ? "Первый зарегистрированный пользователь становится администратором"
-              : "МСК АСФАЛЬТ — управление контентом"}
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">Вход в админ-панель</h1>
+          <p className="text-sm text-muted-foreground mt-1">МСК АСФАЛЬТ — управление контентом</p>
         </div>
         <div className="space-y-3">
           <input
-            type="email"
+            type="text"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+            placeholder="Логин"
             className="w-full rounded-2xl border border-border bg-background px-4 py-3 font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            autoComplete="email"
+            autoComplete="username"
           />
           <div className="relative">
             <input
               type={show ? "text" : "password"}
               required
-              minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Пароль (мин. 6 символов)"
+              placeholder="Пароль"
               className="w-full rounded-2xl border border-border bg-background pl-4 pr-12 py-3 font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              autoComplete="current-password"
             />
             <button
               type="button"
@@ -129,14 +128,7 @@ function LoginScreen() {
           disabled={busy}
           className="w-full rounded-full bg-gradient-brand text-white py-3 font-semibold shadow-soft hover:shadow-glow-green transition disabled:opacity-60"
         >
-          {busy ? "…" : mode === "signup" ? "Создать аккаунт" : "Войти"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="block w-full text-center text-sm text-muted-foreground hover:text-foreground"
-        >
-          {mode === "signin" ? "Первый раз? Создать аккаунт" : "Уже есть аккаунт — войти"}
+          {busy ? "…" : "Войти"}
         </button>
         <Link to="/" className="block text-center text-sm text-muted-foreground hover:text-foreground">
           ← на сайт

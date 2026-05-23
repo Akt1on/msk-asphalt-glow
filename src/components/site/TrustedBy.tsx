@@ -1,9 +1,11 @@
 // Стилизованные знаки крупнейших ритейл-сетей РФ.
 // Использованы фирменные цвета и формы — без копирования официальных логотипов.
 
+import type { ReactNode } from "react";
+
 type Brand = {
   name: string;
-  render: () => JSX.Element;
+  render: () => ReactNode;
 };
 
 const BRANDS: Brand[] = [

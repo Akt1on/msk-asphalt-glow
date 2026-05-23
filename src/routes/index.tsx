@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Hero } from "@/components/site/Hero";
+import { TrustedBy } from "@/components/site/TrustedBy";
 import { Advantages } from "@/components/site/Advantages";
 import { Services } from "@/components/site/Services";
 import { Portfolio } from "@/components/site/Portfolio";
@@ -37,6 +38,7 @@ function Index() {
       <SiteHeader />
       <main className="pb-24 lg:pb-0">
         <Hero />
+        <TrustedBy />
         <Advantages />
         <Services />
         <Portfolio />
